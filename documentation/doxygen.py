@@ -2079,6 +2079,8 @@ def parse_var(state: State, element: ET.Element):
     else:
         var.is_constexpr = False
     var.is_static = element.attrib['static'] == 'yes'
+    if var.is_static and var.type.startswith('static'):
+        var.type = var.type[7:]
     var.is_protected = element.attrib['prot'] == 'protected'
     var.is_private = element.attrib['prot'] == 'private'
     var.name = element.find('name').text
