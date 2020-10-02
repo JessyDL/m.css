@@ -55,8 +55,8 @@ ul ol, ul ul, ol ol, ol ul {
   margin-bottom: 0;
 }
 main p {
-  text-indent: var(--paragraph-indent);
-  text-align: var(--paragraph-align);
+  text-indent: 0;
+  text-align: 0;
 }
 /* Remove indentation and justification where it doesn't make sense */
 main p.m-noindent, li > p, dd > p, table.m-table td > p {
@@ -307,6 +307,7 @@ dl.m-footnote dd span.m-footnote a {
   border-radius: var(--border-radius);
   border-color: var(--line-color);
   padding: 0.9375rem 0.9375rem 0.9375rem 0.75rem;
+  background: var(--line-color);
 }
 
 /* Badge */

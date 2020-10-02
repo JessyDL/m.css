@@ -72,6 +72,26 @@ span.m-doc-wrap {
   max-width: 100%; /* otherwise horizontal scrollbars, wtf */
 }
 
+dl.m-doc table {
+  border-collapse: collapse;
+}
+
+dl.m-doc tr:nth-child(even) {
+  background: #343f48;
+}
+
+dl.m-doc tr:nth-child(odd) {
+  background: #2e3439;
+}
+
+dl.m-doc tr:nth-child(even):hover {
+  background: #3f4d58;
+}
+
+dl.m-doc tr:nth-child(odd):hover {
+  background: #404950;
+}
+
 /* Highlight the doc entries the same way as sections */
 dl.m-doc dd {
   margin-bottom: 0.5rem;
@@ -176,6 +196,7 @@ article section.m-doc-details > div::before {
   border-width: 0.125rem;
   border-radius: var(--border-radius);
   border-color: var(--code-background-color);
+  /*background-color: var(--code-background-color);*/
 }
 article section.m-doc-details > div > h3:first-child {
   position: relative; /* so it's above the border */

@@ -45,7 +45,7 @@
   --border-radius: 0.2rem;
 
   /* Basics */
-  --background-color: #2f363f;
+  --background-color: #2d3035;
   --color: #dcdcdc;
   --line-color: #405363;
   --link-color: #5b9dd9;
@@ -67,7 +67,7 @@
   --header-border-width: 0 0 0.25rem 0;
   --header-color: #ffffff;
   --header-breadcrumb-color: #747474; /* same as --dim-color */
-  --header-background-color: #22272e;
+  --header-background-color: #26292d;
   --header-background-color-landing: rgba(34, 39, 46, 0.75);
   --header-background-color-jumbo: rgba(34, 39, 46, 0.25);
   --header-link-color: #ffffff;

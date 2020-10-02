@@ -340,7 +340,7 @@ body { margin: 0; }
 
 html {
   font-size: 16px;
-  background-color: #2f363f;
+  background-color: #2d3035;
 }
 body {
   font-family: 'Source Sans Pro', sans-serif;
@@ -368,8 +368,8 @@ ul ol, ul ul, ol ol, ol ul {
   margin-bottom: 0;
 }
 main p {
-  text-indent: 1.5rem;
-  text-align: justify;
+  text-indent: 0;
+  text-align: 0;
 }
 main p.m-noindent, li > p, dd > p, table.m-table td > p {
   text-indent: 0;
@@ -584,7 +584,7 @@ dl.m-footnote dd span.m-footnote a {
   padding: 1rem;
 }
 .m-frame {
-  background-color: #2f363f;
+  background-color: #2d3035;
   border-style: solid;
   border-width: 0.125rem;
   border-radius: 0.2rem;
@@ -598,6 +598,7 @@ dl.m-footnote dd span.m-footnote a {
   border-radius: 0.2rem;
   border-color: #405363;
   padding: 0.9375rem 0.9375rem 0.9375rem 0.75rem;
+  background: #405363;
 }
 .m-block.m-badge::after {
   content: ' ';
@@ -739,7 +740,7 @@ table.m-table tr.m-info td, table.m-table td.m-info,
 table.m-table tr.m-info th, table.m-table th.m-info,
 table.m-table tr.m-dim td, table.m-table td.m-dim,
 table.m-table tr.m-dim th, table.m-table th.m-dim {
-  border-color: #2f363f;
+  border-color: #2d3035;
 }
 .m-note pre, .m-note code,
 table.m-table tr.m-default pre, table.m-table tr.m-default code,
@@ -899,7 +900,7 @@ figure.m-figure figcaption, .m-code-figure figcaption, .m-console-figure figcapt
   font-size: 1.17rem;
 }
 .m-imagegrid > div {
-  background-color: #2f363f;
+  background-color: #2d3035;
 }
 .m-imagegrid > div > figure {
   display: block;
@@ -916,7 +917,7 @@ figure.m-figure figcaption, .m-code-figure figcaption, .m-console-figure figcapt
   left: 0;
   width: 100%;
   height: 100%;
-  border-color: #2f363f;
+  border-color: #2d3035;
   border-style: solid;
   border-width: 0.25rem;
   padding: 0.5rem;
@@ -1780,9 +1781,32 @@ li:last-child > div.m-plot:last-child, li:last-child > div.m-plot.m-nopadb {
   margin-bottom: 0;
 }
 
+.sidenav {
+  height: 100%;
+  width: 320px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+.sidenav a {
+  padding: 2px 8px 2px 16px;
+  text-decoration: none;
+  color: #818181;
+  display: block;
+}
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+body {
+  padding-left: 320px;
+}
 body > header > nav {
   width: 100%;
-  background-color: #22272e;
+  background-color: #26292d;
   min-height: 3rem;
 }
 body > header > nav.m-navbar-landing,
@@ -1804,7 +1828,7 @@ body > header > nav.m-navbar-cover:hover {
 }
 body> header > nav.m-navbar-landing:target,
 body> header > nav.m-navbar-cover:target {
-  background-color: #22272e;
+  background-color: #26292d;
   opacity: 1;
 }
 body > header > nav.m-navbar-landing #m-navbar-brand.m-navbar-brand-hidden {
@@ -1937,7 +1961,7 @@ body > header > nav:target #m-navbar-hide {
     padding-bottom: 0;
   }
   body > header > nav #m-navbar-collapse li ol {
-    background-color: #22272e;
+    background-color: #26292d;
   }
   body > header > nav #m-navbar-collapse ol ol li {
     margin-left: 0;
@@ -1972,10 +1996,12 @@ body > header > nav:target #m-navbar-hide {
 }
 body > footer {
   width: 100%;
+  position: fixed;
+  bottom: 0;
 }
 body > footer > nav {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 0rem;
+  padding-bottom: 0rem;
   font-size: 0.85rem;
   text-align: center;
   color: #c5c5c5;
@@ -2117,7 +2143,7 @@ article#m-jumbo {
   margin-top: -1rem;
 }
 #m-landing-cover, #m-cover-image > div, article#m-jumbo > header #m-jumbo-cover {
-  background: linear-gradient(transparent 0%, transparent 50%, #2f363f 100%);
+  background: linear-gradient(transparent 0%, transparent 50%, #2d3035 100%);
   width: 100%;
   height: 100%;
 }
@@ -2532,9 +2558,9 @@ article:last-child, article section:last-child { margin-bottom: 0; }
 .m-code .dl { color: #e07f7c }
 .m-code .sd { color: #e07f7c }
 .m-code .s2 { color: #e07f7c }
-.m-code .se { color: #e07cdc }
+.m-code .se { color: #e07f7c }
 .m-code .sh { color: #e07f7c }
-.m-code .si { color: #a5c9ea }
+.m-code .si { color: #e07f7c }
 .m-code .sx { color: #e07f7c }
 .m-code .sr { color: #e07f7c }
 .m-code .s1 { color: #e07f7c }
@@ -2548,23 +2574,6 @@ article:last-child, article section:last-child { margin-bottom: 0; }
 .m-code .il { color: #c7cf2f }
 
 .m-console .hll { background-color: #ffffcc }
-.m-console .g-AnsiBackgroundBlack { background-color: #232627 }
-.m-console .g-AnsiBackgroundBlue { background-color: #1d99f3 }
-.m-console .g-AnsiBackgroundBrightBlack { background-color: #7f8c8d }
-.m-console .g-AnsiBackgroundBrightBlue { background-color: #3daee9 }
-.m-console .g-AnsiBackgroundBrightCyan { background-color: #16a085 }
-.m-console .g-AnsiBackgroundBrightGreen { background-color: #1cdc9a }
-.m-console .g-AnsiBackgroundBrightMagenta { background-color: #8e44ad }
-.m-console .g-AnsiBackgroundBrightRed { background-color: #c0392b }
-.m-console .g-AnsiBackgroundBrightWhite { background-color: #ffffff }
-.m-console .g-AnsiBackgroundBrightYellow { background-color: #fdbc4b }
-.m-console .g-AnsiBackgroundCyan { background-color: #1abc9c }
-.m-console .g-AnsiBackgroundDefault { background-color: #fcfcfc }
-.m-console .g-AnsiBackgroundGreen { background-color: #11d116 }
-.m-console .g-AnsiBackgroundMagenta { background-color: #9b59b6 }
-.m-console .g-AnsiBackgroundRed { background-color: #ed1515 }
-.m-console .g-AnsiBackgroundWhite { background-color: #fcfcfc }
-.m-console .g-AnsiBackgroundYellow { background-color: #f67400 }
 .m-console .g-AnsiBlack { color: #232627 }
 .m-console .g-AnsiBlue { color: #1d99f3 }
 .m-console .g-AnsiBrightBlack { color: #7f8c8d; font-weight: bold }
@@ -2635,6 +2644,21 @@ span.m-doc-wrap {
   white-space: pre-line;
   max-width: 100%;
 }
+dl.m-doc table {
+  border-collapse: collapse;
+}
+dl.m-doc tr:nth-child(even) {
+  background: #343f48;
+}
+dl.m-doc tr:nth-child(odd) {
+  background: #2e3439;
+}
+dl.m-doc tr:nth-child(even):hover {
+  background: #3f4d58;
+}
+dl.m-doc tr:nth-child(odd):hover {
+  background: #404950;
+}
 dl.m-doc dd {
   margin-bottom: 0.5rem;
 }
@@ -2672,7 +2696,7 @@ ul.m-doc li.m-doc-expansible > ul.m-doc, ul.m-doc li.m-doc-collapsible > ul.m-do
   margin-left: 0.5rem;
 }
 ul.m-doc li.m-doc-expansible > a:first-child:before, ul.m-doc li.m-doc-collapsible > a:first-child:before {
-  background-color: #2f363f;
+  background-color: #2d3035;
   display: inline-block;
   width: 0.4rem;
   font-weight: bold;
@@ -2809,7 +2833,7 @@ a.m-doc-search-icon:focus svg, a.m-doc-search-icon:hover svg, a.m-doc-search-ico
   float: right;
 }
 .m-doc-search-content {
-  background-color: #22272e;
+  background-color: #26292d;
   border-radius: 0.2rem;
   padding: 1rem;
 }

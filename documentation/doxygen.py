@@ -2641,6 +2641,7 @@ def parse_xml(state: State, xml: str):
                 if compound.description.startswith(wrapped_brief):
                     compound.description = compound.description[len(wrapped_brief):]
 
+    specializations = []
     compounddef_child: ET.Element
     for compounddef_child in compounddef:
         # Directory / file
@@ -2693,10 +2694,17 @@ def parse_xml(state: State, xml: str):
                     # Use the full name if this is a file or group (where the
                     # hierarchy isn't implicit like with namespace or class)
                     class_.name = symbol.leaf_name if compound.kind in ['namespace', 'class', 'struct', 'union'] else symbol.name
+                    class_.symbol_name = symbol.name
                     class_.brief = symbol.brief
                     class_.deprecated = symbol.deprecated
                     class_.since = symbol.since
                     class_.templates = symbol.templates
+                    class_.specializations = []
+                    class_.is_specialization = False
+                    
+                    if "<" in class_.name or "&lt;" in class_.name:
+                        class_.is_specialization = True
+                        specializations += [class_]
 
                     # Put classes into the public/protected section for
                     # inner classes
@@ -2709,6 +2717,10 @@ def parse_xml(state: State, xml: str):
                     else:
                         assert compound.kind in ['namespace', 'group', 'file']
                         compound.classes += [class_]
+                    
+
+                    
+
 
         # Base class (if it links to anywhere)
         elif compounddef_child.tag == 'basecompoundref':
@@ -3076,6 +3088,16 @@ def parse_xml(state: State, xml: str):
                                             'tableofcontents'] and
             not (compounddef.attrib['kind'] in ['page', 'group'] and compounddef_child.tag == 'title')): # pragma: no cover
             logging.warning("{}: ignoring <{}> in <compounddef>".format(state.current, compounddef_child.tag))
+
+    for specialization in specializations:
+        truncated_name = specialization.symbol_name[:specialization.symbol_name.find('&lt;')]
+        for i, class_ in enumerate(compound.classes):
+            if class_.symbol_name == truncated_name:
+                class_.specializations += [specialization]
+                compound.classes[i] = class_
+                break
+
+    compound.specializations = specializations
 
     # Decide about the prefix (it may contain template parameters, so we
     # had to wait until everything is parsed)
@@ -3685,6 +3707,11 @@ def run(state: State, *, templates=default_templates, wildcard=default_wildcard,
 
     postprocess_state(state)
 
+    index_parse = None
+    for file in xml_files:
+        if os.path.basename(file) == 'index.xml' and index_parse is None:
+            index_parse = parse_index_xml(state, file)
+
     for file in xml_files:
         if os.path.basename(file) == 'index.xml':
             parsed = parse_index_xml(state, file)
@@ -3711,9 +3738,11 @@ def run(state: State, *, templates=default_templates, wildcard=default_wildcard,
         else:
             parsed = parse_xml(state, file)
             if not parsed: continue
-
+            parsed.index = index_parse.index
+            
             template = env.get_template('{}.html'.format(parsed.compound.kind))
-            rendered = template.render(compound=parsed.compound,
+            rendered = template.render(index=parsed.index,
+                compound=parsed.compound,
                 DOXYGEN_VERSION=parsed.version,
                 FILENAME=parsed.compound.url,
                 SEARCHDATA_FORMAT_VERSION=searchdata_format_version,
