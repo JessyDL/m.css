@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<meta charset="UTF-8" />
 	<title>{% block title %}{{ PROJECT_NAME }}{% if PROJECT_BRIEF %} {{ PROJECT_BRIEF }}{% endif %}{% endblock %}
 	</title>
 	{% for css in STYLESHEETS %}
-	<link rel="stylesheet" href="{{ css|basename_or_url|e }}" />
+	<link rel="stylesheet" href="{{ css|basename_or_url|e }}"/>
+	{% endfor %}
+	{% for css, name, rel in CSS_FILES %}
+	<link rel="{{ rel }}" href="{{ css|basename_or_url|e }}" title="{{ name }}"/>
 	{% endfor %}
 	{% if FAVICON %}
 	<link rel="icon" href="{{ FAVICON[0]|basename_or_url|e }}" type="{{ FAVICON[1] }}" />
@@ -26,7 +28,7 @@
 	{% endif %}
 </head>
 
-<body>
+<body style="visibility: hidden;" onload="html_load()">
 	<header>
 		<nav id="navigation">
 			<div class="m-container">
@@ -201,6 +203,19 @@
 	<script src="searchdata-v{{ SEARCHDATA_FORMAT_VERSION }}.js" async="async"></script>
 	{% endif %}
 	{% endif %}
+
+	{% block javascript %}
+	<script type="text/javascript">
+	{% include "scripts/styleswitcher.js" %}
+    </script>
+	{% endblock %}
+	<footer>
+	<select style="float: right; left: -345px; position: relative;">
+		{% for css, name, rel in CSS_FILES %}
+		<option onclick="setActiveStyleSheet('{{ name }}')">{{ name }}</option> 
+		{% endfor %}
+	</select>
+	</footer>
 </body>
 
 </html>

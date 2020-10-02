@@ -1,17 +1,32 @@
 {% extends 'base.html' %}
 
-{% macro entry_class(class) %}{% include 'entry-class.html' %}{% endmacro %}
-{% macro entry_typedef(typedef, mark_nonpublic=False) %}{% include 'entry-typedef.html' %}{% endmacro %}
-{% macro entry_enum(enum, mark_nonpublic=False) %}{% include 'entry-enum.html' %}{% endmacro %}
-{% macro entry_func(func, mark_nonpublic=False) %}{% include 'entry-func.html' %}{% endmacro %}
-{% macro entry_var(var, mark_nonpublic=False) %}{% include 'entry-var.html' %}{% endmacro %}
-{% macro entry_define(define) %}{% include 'entry-define.html' %}{% endmacro %}
+{% macro entry_typedef(typedef, mark_nonpublic=False) %}{% include 'entries/typedef.html' %}{% endmacro %}
+{% macro entry_enum(enum, mark_nonpublic=False) %}{% include 'entries/enum.html' %}{% endmacro %}
+{% macro entry_func(func, mark_nonpublic=False) %}{% include 'entries/func.html' %}{% endmacro %}
+{% macro entry_var(var, mark_nonpublic=False) %}{% include 'entries/var.html' %}{% endmacro %}
+{% macro entry_define(define) %}{% include 'entries/define.html' %}{% endmacro %}
 
-{% macro details_typedef(typedef, prefix) %}{% include 'details-typedef.html' %}{% endmacro %}
-{% macro details_enum(enum, prefix) %}{% include 'details-enum.html' %}{% endmacro %}
-{% macro details_func(func, prefix) %}{% include 'details-func.html' %}{% endmacro %}
-{% macro details_var(var, prefix) %}{% include 'details-var.html' %}{% endmacro %}
-{% macro details_define(define) %}{% include 'details-define.html' %}{% endmacro %}
+{% from "macros/entries.html" import 
+	compound_entry_funcs, 
+	compound_entry_defines, 
+	compound_entry_classes, 
+	compound_entry_typedefs, 
+	compound_entry_enums, 
+	compound_entry_concepts, 
+	compound_entry_vars,
+	compound_entry_group,
+	compound_entry_types,
+	compound_entry_public_typedef_types,
+	compound_entry_public_class_types,
+	compound_entry_public_enum_types,
+	details_funcs
+	with context %}
+
+{% macro details_typedef(typedef, prefix) %}{% include 'details/typedef.html' %}{% endmacro %}
+{% macro details_enum(enum, prefix) %}{% include 'details/enum.html' %}{% endmacro %}
+{% macro details_func(func, prefix) %}{% include 'details/func.html' %}{% endmacro %}
+{% macro details_var(var, prefix) %}{% include 'details/var.html' %}{% endmacro %}
+{% macro details_define(define) %}{% include 'details/define.html' %}{% endmacro %}
 
 {% block title %}{% set j = joiner('::') %}{% for name, _ in compound.breadcrumb %}{{ j() }}{{ name }}{% endfor %}
 {{ compound.kind }} | {{ super() }}{% endblock %}
@@ -158,9 +173,7 @@
 <section id="base-classes">
 	<h2><a href="#base-classes">Base classes</a></h2>
 	<dl class="m-doc">
-		{% for class in compound.base_classes %}
-		{{ entry_class(class) }}
-		{% endfor %}
+		{{ compound_entry_classes(compound.classes) }}
 	</dl>
 </section>
 {% endif %}
@@ -168,15 +181,9 @@
 <section id="pub-types">
 	<h2><a href="#pub-types">Public types</a></h2>
 	<dl class="m-doc">
-		{% for kind, type in compound.public_types %}
-		{% if kind == 'class' %}
-		{{ entry_class(type) }}
-		{% elif kind == 'enum' %}
-		{{ entry_enum(type) }}
-		{% elif kind == 'typedef' %}
-		{{ entry_typedef(type) }}
-		{% endif %}
-		{% endfor %}
+		{{ compound_entry_public_typedef_types(compound.public_typedef_types) }}
+		{{ compound_entry_public_class_types(compound.public_class_types) }}
+		{{ compound_entry_public_enum_types(compound.public_enum_types) }}
 	</dl>
 </section>
 {% endif %}
@@ -184,9 +191,7 @@
 <section id="pub-static-attribs">
 	<h2><a href="#pub-static-attribs">Public static variables</a></h2>
 	<dl class="m-doc">
-		{% for var in compound.public_static_vars %}
-		{{ entry_var(var) }}
-		{% endfor %}
+		{{ compound_entry_vars(compound.public_static_vars) }}
 	</dl>
 </section>
 {% endif %}
@@ -194,9 +199,7 @@
 <section id="pub-static-methods">
 	<h2><a href="#pub-static-methods">Public static functions</a></h2>
 	<dl class="m-doc">
-		{% for func in compound.public_static_funcs %}
-		{{ entry_func(func) }}
-		{% endfor %}
+		{{ compound_entry_funcs(compound.public_static_funcs) }}
 	</dl>
 </section>
 {% endif %}
@@ -204,9 +207,7 @@
 <section id="typeless-methods">
 	<h2><a href="#typeless-methods">Constructors, destructors, conversion operators</a></h2>
 	<dl class="m-doc">
-		{% for func in compound.typeless_funcs %}
-		{{ entry_func(func) }}
-		{% endfor %}
+		{{ compound_entry_funcs(compound.typeless_funcs) }}
 	</dl>
 </section>
 {% endif %}
@@ -214,9 +215,7 @@
 <section id="pub-methods">
 	<h2><a href="#pub-methods">Public functions</a></h2>
 	<dl class="m-doc">
-		{% for func in compound.public_funcs %}
-		{{ entry_func(func) }}
-		{% endfor %}
+		{{ compound_entry_funcs(compound.public_funcs) }}
 	</dl>
 </section>
 {% endif %}
@@ -224,9 +223,7 @@
 <section id="signals">
 	<h2><a href="#signals">Signals</a></h2>
 	<dl class="m-doc">
-		{% for func in compound.signals %}
-		{{ entry_func(func) }}
-		{% endfor %}
+		{{ compound_entry_funcs(compound.signals) }}
 	</dl>
 </section>
 {% endif %}
@@ -234,9 +231,7 @@
 <section id="pub-slots">
 	<h2><a href="#pub-slots">Public slots</a></h2>
 	<dl class="m-doc">
-		{% for func in compound.public_slots %}
-		{{ entry_func(func) }}
-		{% endfor %}
+		{{ compound_entry_funcs(compound.public_slots) }}
 	</dl>
 </section>
 {% endif %}
@@ -244,9 +239,7 @@
 <section id="pub-attribs">
 	<h2><a href="#pub-attribs">Public variables</a></h2>
 	<dl class="m-doc">
-		{% for var in compound.public_vars %}
-		{{ entry_var(var) }}
-		{% endfor %}
+		{{ compound_entry_vars(compound.public_vars) }}
 	</dl>
 </section>
 {% endif %}
@@ -254,15 +247,9 @@
 <section id="pro-types">
 	<h2><a href="#pro-types">Protected types</a></h2>
 	<dl class="m-doc">
-		{% for kind, type in compound.protected_types %}
-		{% if kind == 'class' %}
-		{{ entry_class(type) }}
-		{% elif kind == 'enum' %}
-		{{ entry_enum(type) }}
-		{% elif kind == 'typedef' %}
-		{{ entry_typedef(type) }}
-		{% endif %}
-		{% endfor %}
+		{{ compound_entry_public_typedef_types(compound.protected_typedef_types) }}
+		{{ compound_entry_public_class_types(compound.protected_class_types) }}
+		{{ compound_entry_public_enum_types(compound.protected_enum_types) }}
 	</dl>
 </section>
 {% endif %}
@@ -270,9 +257,7 @@
 <section id="pro-static-methods">
 	<h2><a href="#pro-static-methods">Protected static functions</a></h2>
 	<dl class="m-doc">
-		{% for func in compound.protected_static_funcs %}
-		{{ entry_func(func) }}
-		{% endfor %}
+		{{ compound_entry_funcs(compound.protected_static_funcs) }}
 	</dl>
 </section>
 {% endif %}
@@ -280,9 +265,7 @@
 <section id="pro-methods">
 	<h2><a href="#pro-methods">Protected functions</a></h2>
 	<dl class="m-doc">
-		{% for func in compound.protected_funcs %}
-		{{ entry_func(func) }}
-		{% endfor %}
+		{{ compound_entry_funcs(compound.protected_funcs) }}
 	</dl>
 </section>
 {% endif %}
@@ -290,9 +273,7 @@
 <section id="pro-slots">
 	<h2><a href="#pro-slots">Protected slots</a></h2>
 	<dl class="m-doc">
-		{% for func in compound.protected_slots %}
-		{{ entry_func(func) }}
-		{% endfor %}
+		{{ compound_entry_funcs(compound.protected_slots) }}
 	</dl>
 </section>
 {% endif %}
@@ -300,9 +281,7 @@
 <section id="pro-static-attribs">
 	<h2><a href="#pro-static-attribs">Protected static variables</a></h2>
 	<dl class="m-doc">
-		{% for var in compound.protected_static_vars %}
-		{{ entry_var(var) }}
-		{% endfor %}
+		{{ compound_entry_vars(compound.protected_static_vars) }}
 	</dl>
 </section>
 {% endif %}
@@ -310,9 +289,7 @@
 <section id="pro-attribs">
 	<h2><a href="#pro-attribs">Protected variables</a></h2>
 	<dl class="m-doc">
-		{% for var in compound.protected_vars %}
-		{{ entry_var(var) }}
-		{% endfor %}
+		{{ compound_entry_vars(compound.protected_vars) }}
 	</dl>
 </section>
 {% endif %}
@@ -320,9 +297,7 @@
 <section id="pri-methods">
 	<h2><a href="#pri-methods">Private functions</a></h2>
 	<dl class="m-doc">
-		{% for func in compound.private_funcs %}
-		{{ entry_func(func) }}
-		{% endfor %}
+		{{ compound_entry_funcs(compound.private_funcs) }}
 	</dl>
 </section>
 {% endif %}
@@ -330,9 +305,7 @@
 <section id="pri-slots">
 	<h2><a href="#pri-slots">Private slots</a></h2>
 	<dl class="m-doc">
-		{% for func in compound.private_slots %}
-		{{ entry_func(func) }}
-		{% endfor %}
+		{{ compound_entry_funcs(compound.private_slots) }}
 	</dl>
 </section>
 {% endif %}
@@ -343,17 +316,7 @@
 	{{ group.description }}
 	{% endif %}
 	<dl class="m-doc">
-		{% for kind, member in group.members %}
-		{% if kind == 'typedef' %}
-		{{ entry_typedef(member, mark_nonpublic=True) }}
-		{% elif kind == 'enum' %}
-		{{ entry_enum(member, mark_nonpublic=True) }}
-		{% elif kind == 'func' %}
-		{{ entry_func(member, mark_nonpublic=True) }}
-		{% elif kind == 'var' %}
-		{{ entry_var(member, mark_nonpublic=True) }}
-		{% endif %}
-		{% endfor %}
+		{{ compound_entry_group(group.members) }}
 	</dl>
 </section>
 {% endfor %}
@@ -361,9 +324,7 @@
 <section id="friends">
 	<h2><a href="#friends">Friends</a></h2>
 	<dl class="m-doc">
-		{% for func in compound.friend_funcs %}
-		{{ entry_func(func) }}
-		{% endfor %}
+		{{ compound_entry_funcs(compound.friend_funcs) }}
 	</dl>
 </section>
 {% endif %}
@@ -444,56 +405,17 @@
 {% if compound.has_func_details %}
 <section>
 	<h2>Function documentation</h2>
-	{% for func in compound.public_static_funcs %}
-	{% if func.has_details %}
-	{{ details_func(func, compound.prefix_wbr) }}
-	{% endif %}
-	{% endfor %}
-	{% for func in compound.typeless_funcs %}
-	{% if func.has_details %}
-	{{ details_func(func, compound.prefix_wbr) }}
-	{% endif %}
-	{% endfor %}
-	{% for func in compound.public_funcs %}
-	{% if func.has_details %}
-	{{ details_func(func, compound.prefix_wbr) }}
-	{% endif %}
-	{% endfor %}
-	{% for func in compound.signals %}
-	{% if func.has_details %}
-	{{ details_func(func, compound.prefix_wbr) }}
-	{% endif %}
-	{% endfor %}
-	{% for func in compound.public_slots %}
-	{% if func.has_details %}
-	{{ details_func(func, compound.prefix_wbr) }}
-	{% endif %}
-	{% endfor %}
-	{% for func in compound.protected_static_funcs %}
-	{% if func.has_details %}
-	{{ details_func(func, compound.prefix_wbr) }}
-	{% endif %}
-	{% endfor %}
-	{% for func in compound.protected_funcs %}
-	{% if func.has_details %}
-	{{ details_func(func, compound.prefix_wbr) }}
-	{% endif %}
-	{% endfor %}
-	{% for func in compound.protected_slots %}
-	{% if func.has_details %}
-	{{ details_func(func, compound.prefix_wbr) }}
-	{% endif %}
-	{% endfor %}
-	{% for func in compound.private_funcs %}
-	{% if func.has_details %}
-	{{ details_func(func, compound.prefix_wbr) }}
-	{% endif %}
-	{% endfor %}
-	{% for func in compound.private_slots %}
-	{% if func.has_details %}
-	{{ details_func(func, compound.prefix_wbr) }}
-	{% endif %}
-	{% endfor %}
+	{{ details_funcs(compound.public_static_funcs, prefix=compound.prefix_wbr) }}
+	{{ details_funcs(compound.typeless_funcs, prefix=compound.prefix_wbr) }}
+	{{ details_funcs(compound.public_funcs, prefix=compound.prefix_wbr) }}
+	{{ details_funcs(compound.signals, prefix=compound.prefix_wbr) }}
+	{{ details_funcs(compound.public_slots, prefix=compound.prefix_wbr) }}
+	{{ details_funcs(compound.protected_static_funcs, prefix=compound.prefix_wbr) }}
+	{{ details_funcs(compound.protected_funcs, prefix=compound.prefix_wbr) }}
+	{{ details_funcs(compound.protected_slots, prefix=compound.prefix_wbr) }}
+	{{ details_funcs(compound.private_funcs, prefix=compound.prefix_wbr) }}
+	{{ details_funcs(compound.private_slots, prefix=compound.prefix_wbr) }}
+	
 	{% for group in compound.groups %}
 	{% for kind, member in group.members %}
 	{% if kind == 'func' and member.has_details %}
@@ -501,11 +423,9 @@
 	{% endif %}
 	{% endfor %}
 	{% endfor %}
-	{% for func in compound.friend_funcs %}
-	{% if func.has_details %}
-	{{ details_func(func, '') }}
-	{% endif %}
-	{% endfor %}
+
+	{{ details_funcs(compound.friend_funcs, prefix='') }}
+	
 	{% for kind, member in compound.related %}
 	{% if kind == 'func' and member.has_details %}
 	{{ details_func(member, '') }}
@@ -564,9 +484,7 @@
 <section id="derived-classes">
 	<h2><a href="#derived-classes">Derived classes</a></h2>
 	<dl class="m-doc">
-		{% for class in compound.derived_classes %}
-		{{ entry_class(class) }}
-		{% endfor %}
+		{{ compound_entry_classes(compound.derived_classes) }}
 	</dl>
 </section>
 {% endif %}

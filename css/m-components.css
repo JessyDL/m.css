@@ -142,6 +142,62 @@ code {
   padding: 0.125rem;
 }
 
+/* attributes */
+
+.m-attr-defaulted {
+  background-color: #ffffff;
+}
+
+.m-attr-constexpr {
+  background-color: var(--primary-color);
+}
+
+.m-attr-static {
+  background-color: #ffffff;
+}
+
+.m-attr-noexcept {
+  background-color: #ffffff;
+}
+
+.m-attr-block {
+  border-radius: 0.06125rem;
+  padding: 0.06125rem 0.125rem;
+}
+
+.m-attr-block .tooltip {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 1px 0;
+  border-radius: 2px;
+ 
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+  
+  width: 120px;
+  margin-top: -30px;
+  margin-left: -60px;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.m-attr-block:hover .tooltip {
+  visibility: visible;
+}
+
+.m-attr-block .tooltip::after {
+  content: " ";
+  position: absolute;
+  top: 100%; /* At the bottom of the tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
 /* Focus outline on link, canvas and input: match the focused header item. */
 *:focus { outline-color: var(--header-link-current-color); }
 

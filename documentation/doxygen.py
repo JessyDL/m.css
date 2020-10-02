@@ -107,9 +107,10 @@ default_config = {
         ("Files", 'files', [])
     ],
 
-    'STYLESHEETS': [
-        'https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600',
-        '../css/m-dark+documentation.compiled.css'],
+    'STYLESHEETS': ['https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600'],
+    'CSS_FILES': [
+        ('../css/m-dark+documentation.compiled.css', 'dark', 'stylesheet'),
+        ('../css/m-light+documentation.compiled.css', 'light', 'stylesheet-alternate')],
     'HTML_HEADER': None,
     'EXTRA_FILES': [],
     'PAGE_HEADER': None,
@@ -2073,11 +2074,15 @@ def parse_var(state: State, element: ET.Element):
     var = Empty()
     state.current_definition_url_base, var.base_url, var.id, var.include, var.has_details = parse_id_and_include(state, element)
     var.type = parse_type(state, element.find('type'))
+    var.is_concept = False
+    var.is_constexpr = False
+    # todo when doxygen fully supports concepts, we should fix this
+    if var.type.startswith('concept'):
+        var.is_concept = True
+        var.type = var.type[8:]
     if var.type.startswith('constexpr'):
         var.type = var.type[10:]
         var.is_constexpr = True
-    else:
-        var.is_constexpr = False
     var.is_static = element.attrib['static'] == 'yes'
     if var.is_static and var.type.startswith('static'):
         var.type = var.type[7:]
@@ -2535,10 +2540,13 @@ def parse_xml(state: State, xml: str):
     compound.related = []
     compound.friend_funcs = []
     compound.groups = []
+    compound.has_vars = False
+    compound.has_concepts = False
     compound.has_enum_details = False
     compound.has_typedef_details = False
     compound.has_func_details = False
     compound.has_var_details = False
+    compound.has_concept_details = False
     compound.has_define_details = False
 
     # Build breadcrumb. Breadcrumb for example pages is built after everything
@@ -2825,7 +2833,11 @@ def parse_xml(state: State, xml: str):
                     var = parse_var(state, memberdef)
                     if var:
                         compound.vars += [var]
-                        if var.has_details: compound.has_var_details = True
+                        compound.has_concepts = True if var.is_concept else compound.has_concepts
+                        compound.has_vars = True if not var.is_concept else compound.has_vars
+                        
+                        if var.has_details and not var.is_concept: compound.has_var_details = True
+                        if var.has_details and var.is_concept: compound.has_concept_details = True
 
             elif compounddef_child.attrib['kind'] == 'define':
                 for memberdef in compounddef_child:
@@ -2881,15 +2893,17 @@ def parse_xml(state: State, xml: str):
                 for memberdef in compounddef_child:
                     var = parse_var(state, memberdef)
                     if var:
-                        compound.public_static_vars += [var]
-                        if var.has_details: compound.has_var_details = True
+                        compound.public_static_vars += [var]                        
+                        if var.has_details and not var.is_concept: compound.has_var_details = True
+                        if var.has_details and var.is_concept: compound.has_concept_details = True
 
             elif compounddef_child.attrib['kind'] == 'public-attrib':
                 for memberdef in compounddef_child:
                     var = parse_var(state, memberdef)
                     if var:
-                        compound.public_vars += [var]
-                        if var.has_details: compound.has_var_details = True
+                        compound.public_vars += [var]                        
+                        if var.has_details and not var.is_concept: compound.has_var_details = True
+                        if var.has_details and var.is_concept: compound.has_concept_details = True
 
             elif compounddef_child.attrib['kind'] == 'protected-type':
                 for memberdef in compounddef_child:
@@ -2932,14 +2946,17 @@ def parse_xml(state: State, xml: str):
                     var = parse_var(state, memberdef)
                     if var:
                         compound.protected_static_vars += [var]
-                        if var.has_details: compound.has_var_details = True
+                        if var.has_details and not var.is_concept: compound.has_var_details = True
+                        if var.has_details and var.is_concept: compound.has_concept_details = True
+
 
             elif compounddef_child.attrib['kind'] == 'protected-attrib':
                 for memberdef in compounddef_child:
                     var = parse_var(state, memberdef)
                     if var:
                         compound.protected_vars += [var]
-                        if var.has_details: compound.has_var_details = True
+                        if var.has_details and not var.is_concept: compound.has_var_details = True
+                        if var.has_details and var.is_concept: compound.has_concept_details = True
 
             elif compounddef_child.attrib['kind'] in ['private-func', 'private-slot']:
                 # Gather only private functions that are virtual and
@@ -2978,7 +2995,8 @@ def parse_xml(state: State, xml: str):
                         var = parse_var(state, memberdef)
                         if var:
                             compound.related += [('var', var)]
-                            if var.has_details: compound.has_var_details = True
+                            if var.has_details and not var.is_concept: compound.has_var_details = True
+                            if var.has_details and var.is_concept: compound.has_concept_details = True
                     elif memberdef.attrib['kind'] == 'define':
                         define = parse_define(state, memberdef)
                         if define:
@@ -3033,7 +3051,8 @@ def parse_xml(state: State, xml: str):
                         var = parse_var(state, memberdef)
                         if var:
                             list += [('var', var)]
-                            if var.has_details: compound.has_var_details = True
+                            if var.has_details and not var.is_concept: compound.has_var_details = True
+                            if var.has_details and var.is_concept: compound.has_concept_details = True
                     elif memberdef.attrib['kind'] == 'define':
                         define = parse_define(state, memberdef)
                         if define:
@@ -3201,9 +3220,14 @@ def parse_xml(state: State, xml: str):
             else:
                 entry.include = None
         for entry in compound.vars:
+            compound.has_concepts = True if entry.is_concept else compound.has_concepts
+            compound.has_vars = True if not entry.is_concept else compound.has_vars
             if entry.include and not state.current_include and entry.base_url == compound.url:
                 entry.has_details = True
-                compound.has_var_details = True
+                if not entry.is_concept:
+                    compound.has_var_details = True
+                else:
+                    compound.has_concept_details = True
             else:
                 entry.include = None
         for entry in compound.defines:
@@ -3250,6 +3274,16 @@ def parse_xml(state: State, xml: str):
         result.name = state.current_prefix[-1]
         result.keywords = search_keywords
         state.search += [result]
+
+    
+    # postprocess and add items to the compound
+
+    compound.public_class_types = [type_ for type_ in compound.public_types if type_[0] == "class" ]
+    compound.public_typedef_types =  [type_ for type_ in compound.public_types if type_[0] == "typedef" ]
+    compound.public_enum_types =  [type_ for type_ in compound.public_types if type_[0] == "enum" ]
+    compound.protected_class_types = [type_ for type_ in compound.protected_types if type_[0] == "class" ]
+    compound.protected_typedef_types =  [type_ for type_ in compound.protected_types if type_[0] == "typedef" ]
+    compound.protected_enum_types =  [type_ for type_ in compound.protected_types if type_[0] == "enum" ]
 
     parsed = Empty()
     parsed.version = root.attrib['version']
@@ -3816,7 +3850,7 @@ def run(state: State, *, templates=default_templates, wildcard=default_wildcard,
                 f.write(b'\n')
 
     # Copy all referenced files
-    for i in state.images + state.config['STYLESHEETS'] + state.config['EXTRA_FILES'] + ([state.doxyfile['PROJECT_LOGO']] if state.doxyfile['PROJECT_LOGO'] else []) + ([state.config['FAVICON'][0]] if state.config['FAVICON'] else []) + ([] if state.config['SEARCH_DISABLED'] else ['search.js']):
+    for i in state.images + state.config['STYLESHEETS'] + [x[0] for x in state.config['CSS_FILES']] + state.config['EXTRA_FILES'] + ([state.doxyfile['PROJECT_LOGO']] if state.doxyfile['PROJECT_LOGO'] else []) + ([state.config['FAVICON'][0]] if state.config['FAVICON'] else []) + ([] if state.config['SEARCH_DISABLED'] else ['search.js']):
         # Skip absolute URLs
         if urllib.parse.urlparse(i).netloc: continue
 

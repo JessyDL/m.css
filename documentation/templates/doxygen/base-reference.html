@@ -2,131 +2,25 @@
 
 {% set prefix = compound.prefix_wbr %}
 
-{% macro entry_module(module) %}{% include 'entries/module.html' %}{% endmacro %}
-{% macro entry_dir(dir) %}{% include 'entries/dir.html' %}{% endmacro %}
-{% macro entry_file(file) %}{% include 'entries/file.html' %}{% endmacro %}
-{% macro entry_namespace(namespace) %}{% include 'entries/namespace.html' %}{% endmacro %}
-{% macro entry_class(class) %}{% include 'entries/class.html' %}{% endmacro %}
-{% macro entry_enum(enum) %}{% include 'entries/enum.html' %}{% endmacro %}
-{% macro entry_typedef(typedef) %}{% include 'entries/typedef.html' %}{% endmacro %}
-{% macro entry_func(func) %}{% include 'entries/func.html' %}{% endmacro %}
-{% macro entry_var(var) %}{% include 'entries/var.html' %}{% endmacro %}
-{% macro entry_concept(concept) %}{% include 'entries/concept.html' %}{% endmacro %}
-{% macro entry_define(define) %}{% include 'entries/define.html' %}{% endmacro %}
+{% from "macros/entries.html" import 
+	compound_entry_dirs, 
+	compound_entry_funcs, 
+	compound_entry_defines, 
+	compound_entry_classes, 
+	compound_entry_typedefs, 
+	compound_entry_namespaces, 
+	compound_entry_files, 
+	compound_entry_enums, 
+	compound_entry_concepts, 
+	compound_entry_vars
+	with context %}
 
 
-{% macro compound_entry_modules(compound) %}
-	<table style="width:100%">
-	{% for module in compound.modules %}
-	<tr>
-	{{ entry_module(module) }}
-	</tr>
-	{% endfor %}
-	</table>
-{% endmacro %}
-{% macro compound_entry_dirs(compound) %}
-	<table style="width:100%">
-	{% for dir in compound.dirs %}
-	<tr>
-	{{ entry_dir(dir) }}
-	</tr>
-	{% endfor %}
-	</table>
-{% endmacro %}
-{% macro compound_entry_files(compound) %}
-	<table style="width:100%">
-	{% for file in compound.files %}
-	<tr>
-	{{ entry_file(file) }}
-	</tr>
-	{% endfor %}
-	</table>
-{% endmacro %}
-{% macro compound_entry_namespaces(compound) %}
-	<table style="width:100%">
-	{% for namespace in compound.namespaces %}
-	<tr>
-	{{ entry_namespace(namespace) }}
-	</tr>
-	{% endfor %}
-	</table>
-{% endmacro %}
-
-{% macro compound_entry_classes(compound) %}
-	<table style="width:100%">
-	{% for class in compound.classes %}
-	{% if not class.is_specialization %}
-	<tr>
-	{{ entry_class(class) }}
-	</tr>
-	{% endif %}
-	{% endfor %}
-	</table>
-{% endmacro %}
-{% macro compound_entry_enums(compound) %}
-	<table style="width:100%">
-	{% for enum in compound.enums %}
-	<tr>
-	{{ entry_enum(enum) }}
-	</tr>
-	{% endfor %}
-	</table>
-{% endmacro %}
-{% macro compound_entry_typedefs(compound) %}
-	<table style="width:100%">
-	{% for typedef in compound.typedefs %}
-	<tr>
-	{{ entry_typedef(typedef) }}
-	</tr>
-	{% endfor %}
-	</table>
-{% endmacro %}
-{% macro compound_entry_vars(compound) %}
-	<table style="width:100%">
-	{% for var in compound.vars %}
-	{% if var.type != "concept"%}
-	<tr>
-	{{ entry_var(var) }}
-	</tr>
-	{% endif %}
-	{% endfor %}
-	</table>
-{% endmacro %}
-{% macro compound_entry_concepts(compound) %}
-	<table style="width:100%">
-	{% for concept in compound.vars %}
-	{% if concept.type == "concept"%}
-	<tr>
-	{{ entry_concept(concept) }}
-	</tr>
-	{% endif %}
-	{% endfor %}
-	</table>
-{% endmacro %}
-{% macro compound_entry_funcs(compound) %}
-	<table style="width:100%">
-	{% for func in compound.funcs %}
-	<tr>
-	{{ entry_func(func) }}
-	</tr>
-	{% endfor %}
-	</table>
-{% endmacro %}
-{% macro compound_entry_defines(compound) %}
-	<table style="width:100%">
-	{% for define in compound.defines %}
-	<tr>
-	{{ entry_define(define) }}
-	</tr>
-	{% endfor %}
-	</table>
-{% endmacro %}
-
-{% macro details_enum(enum) %}{% include 'details-enum.html' %}{% endmacro %}
-{% macro details_typedef(typedef) %}{% include 'details-typedef.html' %}{% endmacro %}
-{% macro details_func(func) %}{% include 'details-func.html' %}{% endmacro %}
-{% macro details_var(var) %}{% include 'details-var.html' %}{% endmacro %}
-{% macro details_define(define) %}{% include 'details-define.html' %}{% endmacro %}
+{% macro details_enum(enum) %}{% include 'details/enum.html' %}{% endmacro %}
+{% macro details_typedef(typedef) %}{% include 'details/typedef.html' %}{% endmacro %}
+{% macro details_func(func) %}{% include 'details/func.html' %}{% endmacro %}
+{% macro details_var(var) %}{% include 'details/var.html' %}{% endmacro %}
+{% macro details_define(define) %}{% include 'details/define.html' %}{% endmacro %}
 
 {% block main %}
 {% block header %}
@@ -195,7 +89,7 @@
 <section id="groups">
 	<h2><a href="#groups">Modules</a></h2>
 	<dl class="m-doc">
-		{{ compound_entry_modules(compound) }}
+		{{ compound_entry_modules(compound.modules) }}
 	</dl>
 </section>
 {% endif %}
@@ -203,7 +97,7 @@
 <section id="subdirs">
 	<h2><a href="#subdirs">Directories</a></h2>
 	<dl class="m-doc">
-		{{ compound_entry_dirs(compound) }}
+		{{ compound_entry_dirs(compound.dirs) }}
 	</dl>
 </section>
 {% endif %}
@@ -211,7 +105,7 @@
 <section id="files">
 	<h2><a href="#files">Files</a></h2>
 	<dl class="m-doc">
-		{{ compound_entry_files(compound) }}
+		{{ compound_entry_files(compound.files) }}
 	</dl>
 </section>
 {% endif %}
@@ -219,7 +113,7 @@
 <section id="namespaces">
 	<h2><a href="#namespaces">Namespaces</a></h2>
 	<dl class="m-doc">
-		{{ compound_entry_namespaces(compound) }}
+		{{ compound_entry_namespaces(compound.namespaces) }}
 	</dl>
 </section>
 {% endif %}
@@ -227,7 +121,7 @@
 <section id="nested-classes">
 	<h2><a href="#nested-classes">Classes</a></h2>
 	<dl class="m-doc">
-		{{ compound_entry_classes(compound) }}
+		{{ compound_entry_classes(compound.classes) }}
 	</dl>
 </section>
 {% endif %}
@@ -235,7 +129,7 @@
 <section id="enum-members">
 	<h2><a href="#enum-members">Enums</a></h2>
 	<dl class="m-doc">
-		{{ compound_entry_enums(compound) }}
+		{{ compound_entry_enums(compound.enums) }}
 	</dl>
 </section>
 {% endif %}
@@ -243,7 +137,7 @@
 <section id="typedef-members">
 	<h2><a href="#typedef-members">Typedefs</a></h2>
 	<dl class="m-doc">
-		{{ compound_entry_typedefs(compound) }}
+		{{ compound_entry_typedefs(compound.typedefs) }}
 	</dl>
 </section>
 {% endif %}
@@ -251,24 +145,24 @@
 <section id="func-members">
 	<h2><a href="#func-members">Functions</a></h2>
 	<dl class="m-doc">
-		{{ compound_entry_funcs(compound) }}
+		{{ compound_entry_funcs(compound.funcs) }}
 	</dl>
 </section>
 {% endif %}
-{% if compound.vars %}
+{% if compound.has_vars %}
 <section id="var-members">
 	<h2><a href="#var-members">Variables</a></h2>
 	<dl class="m-doc">
-		{{ compound_entry_vars(compound) }}
+		{{ compound_entry_vars(compound.vars) }}
 	</dl>
 </section>
 {% endif %}
 <!-- todo: concepts should be handled better -->
-{% if compound.vars %}
+{% if compound.has_concepts %}
 <section id="concepts-members">
 	<h2><a href="#concepts-members">Concepts</a></h2>
 	<dl class="m-doc">
-		{{ compound_entry_concepts(compound) }}
+		{{ compound_entry_concepts(compound.vars) }}
 	</dl>
 </section>
 {% endif %}
@@ -276,7 +170,7 @@
 <section id="define-members">
 	<h2><a href="#define-members">Defines</a></h2>
 	<dl class="m-doc">
-		{{ compound_entry_defines(compound) }}
+		{{ compound_entry_defines(compound.defines) }}
 	</dl>
 </section>
 {% endif %}
@@ -307,13 +201,13 @@
 	</dl>
 </section>
 {% endfor %}
-{% if compound.has_enum_details %}
+
 <section>
 	<h2>Enum documentation</h2>
 	{% for enum in compound.enums %}
-	{% if enum.has_details %}
+	
 	{{ details_enum(enum) }}
-	{% endif %}
+	
 	{% endfor %}
 	{% for group in compound.groups %}
 	{% for kind, member in group.members %}
@@ -323,7 +217,7 @@
 	{% endfor %}
 	{% endfor %}
 </section>
-{% endif %}
+
 {% if compound.has_typedef_details %}
 <section>
 	<h2>Typedef documentation</h2>
@@ -362,7 +256,24 @@
 <section>
 	<h2>Variable documentation</h2>
 	{% for var in compound.vars %}
-	{% if var.has_details %}
+	{% if var.has_details and not var.is_concept %}
+	{{ details_var(var) }}
+	{% endif %}
+	{% endfor %}
+	{% for group in compound.groups %}
+	{% for kind, member in group.members %}
+	{% if kind == 'var' and member.has_details %}
+	{{ details_var(member) }}
+	{% endif %}
+	{% endfor %}
+	{% endfor %}
+</section>
+{% endif %}
+{% if compound.has_concept_details %}
+<section>
+	<h2>Concepts documentation</h2>
+	{% for var in compound.vars %}
+	{% if var.has_details and var.is_concept %}
 	{{ details_var(var) }}
 	{% endif %}
 	{% endfor %}

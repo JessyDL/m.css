@@ -1,0 +1,208 @@
+{% macro entry_module(module) %}{% include 'entries/module.html' %}{% endmacro %}
+{% macro entry_dir(dir) %}{% include 'entries/dir.html' %}{% endmacro %}
+{% macro entry_file(file) %}{% include 'entries/file.html' %}{% endmacro %}
+{% macro entry_namespace(namespace) %}{% include 'entries/namespace.html' %}{% endmacro %}
+{% macro entry_class(class) %}{% include 'entries/class.html' %}{% endmacro %}
+{% macro entry_enum(enum, mark_nonpublic=False) %}{% include 'entries/enum.html' %}{% endmacro %}
+{% macro entry_typedef(typedef, mark_nonpublic=False, print_type=False) %}{% include 'entries/typedef.html' %}{% endmacro %}
+{% macro entry_func(func, mark_nonpublic=False) %}{% include 'entries/func.html' %}{% endmacro %}
+{% macro entry_var(var, mark_nonpublic=False) %}{% include 'entries/var.html' %}{% endmacro %}
+{% macro entry_concept(concept) %}{% include 'entries/concept.html' %}{% endmacro %}
+{% macro entry_define(define) %}{% include 'entries/define.html' %}{% endmacro %}
+
+
+{% macro compound_entry_modules(modules) %}
+	<table style="width:100%">
+	{% for module in modules %}
+	<tr>
+	{{ entry_module(module) }}
+	</tr>
+	{% endfor %}
+	</table>
+{% endmacro %}
+{% macro compound_entry_dirs(dirs) %}
+	<table style="width:100%">
+	{% for dir in dirs %}
+	<tr>
+	{{ entry_dir(dir) }}
+	</tr>
+	{% endfor %}
+	</table>
+{% endmacro %}
+{% macro compound_entry_files(files) %}
+	<table style="width:100%">
+	{% for file in files %}
+	<tr>
+	{{ entry_file(file) }}
+	</tr>
+	{% endfor %}
+	</table>
+{% endmacro %}
+{% macro compound_entry_namespaces(namespaces) %}
+	<table style="width:100%">
+	{% for namespace in namespaces %}
+	<tr>
+	{{ entry_namespace(namespace) }}
+	</tr>
+	{% endfor %}
+	</table>
+{% endmacro %}
+
+{% macro compound_entry_classes(classes) %}
+	<table style="width:100%">
+	{% for class in classes %}
+	{% if not class.is_specialization %}
+	<tr>
+	{{ entry_class(class) }}
+	</tr>
+	{% endif %}
+	{% endfor %}
+	</table>
+{% endmacro %}
+{% macro compound_entry_enums(enums, mark_nonpublic=False) %}
+	<table style="width:100%">
+	{% for enum in enums %}
+	<tr>
+	{{ entry_enum(enum, mark_nonpublic) }}
+	</tr>
+	{% endfor %}
+	</table>
+{% endmacro %}
+{% macro compound_entry_typedefs(typedefs, mark_nonpublic=False) %}
+	<table style="width:100%">
+	{% for typedef in typedefs %}
+	<tr>
+	{{ entry_typedef(typedef, mark_nonpublic) }}
+	</tr>
+	{% endfor %}
+	</table>
+{% endmacro %}
+{% macro compound_entry_vars(vars, mark_nonpublic=False) %}
+	<table style="width:100%">
+	{% for var in vars %}
+	{% if not var.is_concept %}
+	<tr>
+	{{ entry_var(var, mark_nonpublic) }}
+	</tr>
+	{% endif %}
+	{% endfor %}
+	</table>
+{% endmacro %}
+{% macro compound_entry_concepts(vars) %}
+	<table style="width:100%">
+	{% for concept in vars %}
+	{% if concept.is_concept %}
+	<tr>
+	{{ entry_concept(concept) }}
+	</tr>
+	{% endif %}
+	{% endfor %}
+	</table>
+{% endmacro %}
+{% macro compound_entry_funcs(funcs, mark_nonpublic=False) %}
+	<table style="width:100%">
+	{% for func in funcs %}
+	<tr>
+	{{ entry_func(func, mark_nonpublic) }}
+	</tr>
+	{% endfor %}
+	</table>
+{% endmacro %}
+{% macro compound_entry_defines(defines) %}
+	<table style="width:100%">
+	{% for define in defines %}
+	<tr>
+	{{ entry_define(define) }}
+	</tr>
+	{% endfor %}
+	</table>
+{% endmacro %}
+
+{% macro compound_entry_group(members) %}
+	<table style="width:100%">
+		{% for kind, member in members %}
+		<tr>
+		{% if kind == 'typedef' %}
+		{{ entry_typedef(member, mark_nonpublic=True) }}
+		{% elif kind == 'enum' %}
+		{{ entry_enum(member, mark_nonpublic=True) }}
+		{% elif kind == 'func' %}
+		{{ entry_func(member, mark_nonpublic=True) }}
+		{% elif kind == 'var' %}
+		{{ entry_var(member, mark_nonpublic=True) }}
+		{% endif %}
+		</tr>
+		{% endfor %}
+	</table>
+{% endmacro %}
+
+{% macro compound_entry_types(types) %}
+	<table style="width:100%">
+		{% for kind, type in types %}
+		<tr>
+			{% if kind == 'class' %}
+			{{ entry_class(type) }}
+			{% elif kind == 'enum' %}
+			{{ entry_enum(type) }}
+			{% elif kind == 'typedef' %}
+			{{ entry_typedef(type, print_type=True) }}
+			{% endif %}
+		</tr>
+		{% endfor %}
+	</table>
+{% endmacro %}
+
+{% macro compound_entry_public_typedef_types(types) %}
+	{% if types %}
+	<h3>Typedefs</h3>
+	<table style="width:100%">
+		{% for kind, type in types %}
+		<tr>
+			{{ entry_typedef(type, print_type=True) }}
+		</tr>
+		{% endfor %}
+	</table>
+	{% endif %}
+{% endmacro %}
+
+{% macro compound_entry_public_class_types(types) %}
+	{% if types %}
+	<h3>Classes</h3>
+	<table style="width:100%">
+		{% for kind, type in types %}
+		<tr>
+			{{ entry_class(type) }}
+		</tr>
+		{% endfor %}
+	</table>
+	{% endif %}
+{% endmacro %}
+{% macro compound_entry_public_enum_types(types) %}
+	{% if types %}
+	<h3>Enums</h3>
+	<table style="width:100%">
+		{% for kind, type in types %}
+		<tr>
+			{{ entry_enum(type) }}
+		</tr>
+		{% endfor %}
+	</table>
+	{% endif %}
+{% endmacro %}
+
+<!-- Details -->
+
+{% macro details_enum(enum, mark_nonpublic=False) %}{% include 'details/enum.html' %}{% endmacro %}
+{% macro details_typedef(typedef, mark_nonpublic=False, print_type=False) %}{% include 'details/typedef.html' %}{% endmacro %}
+{% macro details_func(func, mark_nonpublic=False) %}{% include 'details/func.html' %}{% endmacro %}
+{% macro details_var(var, mark_nonpublic=False) %}{% include 'details/var.html' %}{% endmacro %}
+{% macro details_concept(concept) %}{% include 'details/concept.html' %}{% endmacro %}
+{% macro details_define(define) %}{% include 'details/define.html' %}{% endmacro %}
+
+{% macro details_funcs(funcs, prefix=compound.prefix_wbr) %}
+	{% for func in funcs %}
+		{% if func.has_details %}
+			{{ details_func(func, prefix) }}
+		{% endif %}
+	{% endfor %}
+{% endmacro %}
